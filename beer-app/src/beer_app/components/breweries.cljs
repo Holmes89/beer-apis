@@ -7,7 +7,7 @@
            :page 1
            }))
 
-(defn load-breweries! "Fetches the list of phones from the server and updates the state atom with it" 
+(defn load-breweries! "Fetches the list of breweries from the server and updates the state atom with it" 
   []
   (ajx/GET "http://localhost:8080/brewery/?page=2" 
       {:handler (fn [breweries] (swap! state assoc :breweries breweries))
