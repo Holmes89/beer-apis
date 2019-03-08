@@ -32,4 +32,4 @@
           ^{:key (get brewery :id)}[brewery-item brewery])]])))
 
 (defn breweries []
-  (list-breweries))
+  [list-breweries])
