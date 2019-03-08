@@ -3,6 +3,7 @@ package main
 import (
 	"beer-api/internal"
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -34,7 +35,7 @@ func main() {
 				"transport": "http",
 				"port":      port,
 			}).Info("server started")
-		errs <- http.ListenAndServe(port, router)
+		errs <- http.ListenAndServe(port, handlers.CORS()(router))
 	}()
 	go func() {
 		c := make(chan os.Signal, 1)
