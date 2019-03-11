@@ -4,7 +4,7 @@
 
 (defonce state
   (r/atom {:breweries []
-           :page 4
+           :page 0
            }))
 
 (defn load-breweries! "Fetches the list of breweries from the server and updates the state atom with it" 
@@ -21,15 +21,30 @@
    [:div.address address]
    [:div (str city ", " state " " zip)]])
 
+(defn next-page
+  []
+  (swap! state update-in [:page] inc)  
+  (load-breweries!))
+
+(defn dec-to-zero
+  [x]
+  (if (> x 0) (dec x) 0))
+
+(defn prev-page
+  []
+  (swap! state update-in [:page] dec-to-zero)  
+  (load-breweries!))
+
 (defn list-breweries []
-  (let [breweries (get-in @state [:breweries])]
-    (load-breweries!)
-    (fn []
-      [:div
-       [:h1 "Brewery List"]
-       [:div#breweries 
-        (for [brewery breweries]
-          ^{:key (get brewery :id)}[brewery-item brewery])]])))
+  (load-breweries!)
+  (fn []
+    [:div
+     [:h1 "Brewery List"]
+     [:div#breweries 
+      (for [brewery (get-in @state [:breweries])]
+        ^{:key (get brewery :id)}[brewery-item brewery])]
+     [:div.button.prev {:on-click #(prev-page)} "Prev"]
+     [:div.button.next {:on-click #(next-page)} "Next"]]))
 
 (defn breweries []
   [list-breweries])
