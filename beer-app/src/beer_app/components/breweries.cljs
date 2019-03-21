@@ -15,11 +15,11 @@
        :response-format :json, :keywords? true}))
 
 (defn brewery-item
-  [{:keys [id name address city state zip] :as brewery}]  
-  [:div.brewery
-   [:div.name name]
-   [:div.address address]
-   [:div (str city ", " state " " zip)]])
+  [{:keys [id name city state] :as brewery}]
+  [:tr
+   [:td [:a {:href (str "#/brewery/" id)} name]]
+   [:td city]
+   [:td state]])
 
 (defn next-page
   []
@@ -39,12 +39,18 @@
   (load-breweries!)
   (fn []
     [:div
-     [:h1 "Brewery List"]
-     [:div#breweries 
-      (for [brewery (get-in @state [:breweries])]
-        ^{:key (get brewery :id)}[brewery-item brewery])]
-     [:div.button.prev {:on-click #(prev-page)} "Prev"]
-     [:div.button.next {:on-click #(next-page)} "Next"]]))
+     [:table.table.is-striped
+      [:thead
+       [:tr
+        [:td "Name"]
+        [:td "City"]
+        [:td "State"]]]
+      [:tbody 
+       (for [brewery (get-in @state [:breweries])]
+         ^{:key (get brewery :id)}[brewery-item brewery])]]
+     [:div.columns.is-centered
+      [:div.button.prev {:on-click #(prev-page)} "Prev"]
+      [:div.button.next.is-pulled-right {:on-click #(next-page)} "Next"]]]))
 
 (defn breweries []
   [list-breweries])
