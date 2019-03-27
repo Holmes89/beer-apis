@@ -27,7 +27,7 @@ func MakeHandler(mr *mux.Router, database Database) http.Handler {
 
 	mr.HandleFunc("/brewery/", h.FindAllBreweries).Methods("GET")
 	mr.HandleFunc("/brewery/{id}", h.FindBreweryByID).Methods("GET")
-	mr.HandleFunc("/brewery/{id}/beer/", h.FindBreweryBeers).Methods("GET")
+	mr.HandleFunc("/brewery-beer/{id}", h.FindBreweryBeers).Methods("GET")
 
 	return mr
 }

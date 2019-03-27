@@ -17,6 +17,7 @@
                  [org.slf4j/jcl-over-slf4j "1.7.25"]
                  [org.slf4j/log4j-over-slf4j "1.7.25"]
                  [org.clojure/java.jdbc "0.7.9"]
+                 [org.clojure/tools.logging "0.4.1"]
                  [org.xerial/sqlite-jdbc "3.27.2.1"]]
   :min-lein-version "2.0.0"
   :resource-paths ["config", "resources"]

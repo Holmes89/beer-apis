@@ -7,7 +7,7 @@
 
 (defn load-brewery!
   [id]
-  (ajx/GET (str "http://localhost:8080/brewery/" id)
+  (ajx/GET (str "http://localhost:3000/brewery/" id)
       {:handler (fn [brewery] (swap! state assoc :brewery brewery))
        :error-handler (fn [details] (.warn js/console (str "Failed to refresh phones from server: " details)))
        :response-format :json, :keywords? true}))

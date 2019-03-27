@@ -16,6 +16,7 @@
       (merge {:env :dev
               ;; do not block thread that starts web server
               ::server/join? false
+              ::server/port 3000
               ;; Routes can be a function that resolve routes,
               ;;  we can use this to set the routes to be reloadable
               ::server/routes #(route/expand-routes (deref #'service/routes))
