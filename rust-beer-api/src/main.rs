@@ -1,5 +1,13 @@
+#[macro_use]
+extern crate diesel;
+
+use diesel::prelude::*;
+use diesel::r2d2::{self, ConnectionManager};
+
 use actix_web::{get, web, App, HttpResponse, HttpServer};
 use serde::Serialize;
+
+type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
 #[derive(Serialize)]
 struct Beer {
@@ -9,7 +17,7 @@ struct Beer {
 }
 
 #[get("/beer/{id}")]
-async fn beer_by_id(path: web::Path<(i64,)>) -> HttpResponse {
+async fn beer_by_id(path: web::Path<(i64,)>, pool: web::Data<Pool>) -> HttpResponse {
     let b = Beer {
         id: path.0,
         name: String::from("test"),
@@ -19,7 +27,7 @@ async fn beer_by_id(path: web::Path<(i64,)>) -> HttpResponse {
 }
 
 #[get("/beer/")]
-async fn beer_all() -> HttpResponse {
+async fn beer_all(pool: web::Data<Pool>) -> HttpResponse {
     let b: Vec<Beer> = vec![
         Beer {
             id: 1,
@@ -46,7 +54,7 @@ struct Brewery {
 }
 
 #[get("/brewery/{id}/beer/")]
-async fn beer_by_breweries(path: web::Path<(i64,)>) -> HttpResponse {
+async fn beer_by_breweries(path: web::Path<(i64,)>, pool: web::Data<Pool>) -> HttpResponse {
     let b: Vec<Beer> = vec![
         Beer {
             id: 1,
@@ -63,7 +71,7 @@ async fn beer_by_breweries(path: web::Path<(i64,)>) -> HttpResponse {
 }
 
 #[get("/brewery/{id}")]
-async fn brewery_by_id(path: web::Path<(i64,)>) -> HttpResponse {
+async fn brewery_by_id(path: web::Path<(i64,)>, pool: web::Data<Pool>) -> HttpResponse {
     let b = Brewery {
         id: path.0,
         name: String::from("test"),
@@ -76,7 +84,7 @@ async fn brewery_by_id(path: web::Path<(i64,)>) -> HttpResponse {
 }
 
 #[get("/brewery/")]
-async fn brewery_all() -> HttpResponse {
+async fn brewery_all(pool: web::Data<Pool>) -> HttpResponse {
     let b: Vec<Brewery> = vec![Brewery {
         id: 1,
         name: String::from("test"),
@@ -90,8 +98,13 @@ async fn brewery_all() -> HttpResponse {
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    let manager = ConnectionManager::<SqliteConnection>::new("file:beers.db");
+    let pool = r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create pool.");
+    HttpServer::new(move || {
         App::new()
+            .data(pool.clone())
             .service(beer_by_id)
             .service(beer_all)
             .service(beer_by_breweries)
