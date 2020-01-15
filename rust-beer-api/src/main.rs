@@ -15,13 +15,14 @@ type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 #[get("/beer/{id}")]
 async fn beer_by_id(path: web::Path<(String,)>, pool: web::Data<Pool>) -> HttpResponse {
     let id = path.0.as_ref();
-    let results = db::find_one(id, pool);
+    let results = db::find_beer_by_id(id, pool);
     HttpResponse::Ok().json(results)
 }
 
 #[get("/beer/")]
 async fn beer_all(pool: web::Data<Pool>) -> HttpResponse {
-    HttpResponse::Ok().json("not implemented")
+    let results = db::find_all_beer(pool);
+    HttpResponse::Ok().json(results)
 }
 
 #[get("/brewery/{id}/beer/")]
