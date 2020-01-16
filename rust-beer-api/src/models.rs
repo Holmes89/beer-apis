@@ -2,12 +2,12 @@ use serde::Serialize;
 
 #[derive(Queryable, Serialize)]
 pub struct Brewery {
-    id: String,
-    name: String,
-    address: String,
-    city: String,
-    state: String,
-    code: String,
+    id: Option<String>,
+    name: Option<String>,
+    address: Option<String>,
+    city: Option<String>,
+    state: Option<String>,
+    code: Option<String>,
 }
 
 #[derive(Queryable, Serialize)]

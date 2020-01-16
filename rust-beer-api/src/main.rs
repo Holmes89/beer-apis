@@ -1,43 +1,48 @@
 use diesel::r2d2::{self, ConnectionManager};
 use diesel::sqlite::SqliteConnection;
 
-use actix_web::{get, web, App, HttpResponse, HttpServer, ResponseError};
+use actix_web::{get, web, App, HttpResponse, HttpServer};
 
 mod db;
 mod models;
 mod schema;
 
+use crate::db::*;
+
 #[macro_use]
 extern crate diesel;
-
-type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
 #[get("/beer/{id}")]
 async fn beer_by_id(path: web::Path<(String,)>, pool: web::Data<Pool>) -> HttpResponse {
     let id = path.0.as_ref();
-    let results = db::find_beer_by_id(id, pool);
+    let results = find_beer_by_id(id, pool);
     HttpResponse::Ok().json(results)
 }
 
 #[get("/beer/")]
 async fn beer_all(pool: web::Data<Pool>) -> HttpResponse {
-    let results = db::find_all_beer(pool);
+    let results = find_all_beer(pool);
     HttpResponse::Ok().json(results)
 }
 
 #[get("/brewery/{id}/beer/")]
 async fn beer_by_breweries(path: web::Path<(String,)>, pool: web::Data<Pool>) -> HttpResponse {
-    HttpResponse::Ok().json("not implemented")
+    let id = path.0.as_ref();
+    let results = find_all_beer_by_brewery(id, pool);
+    HttpResponse::Ok().json(results)
 }
 
 #[get("/brewery/{id}")]
 async fn brewery_by_id(path: web::Path<(String,)>, pool: web::Data<Pool>) -> HttpResponse {
-    HttpResponse::Ok().json("not implemented")
+    let id = path.0.as_ref();
+    let results = find_brewery_by_id(id, pool);
+    HttpResponse::Ok().json(results)
 }
 
 #[get("/brewery/")]
 async fn brewery_all(pool: web::Data<Pool>) -> HttpResponse {
-    HttpResponse::Ok().json("not implemented")
+    let results = find_all_breweries(pool);
+    HttpResponse::Ok().json(results)
 }
 
 #[actix_rt::main]
